@@ -9,24 +9,15 @@
 
 </head>
 
-<div class="card" class="p-5 mb-6 bg-primary text-danger">
-  <span class="text-danger">yeison ruiz ruiz</span>
+<div class="card" class="p-5 mb-6 bg-primary text-primary">
+  <span class="text-primary">yeison ruiz ruiz</span>
   </div>
-
-
-<div style="width: 18rem;" class="footer">
-  <div class="card-body">
-    <div id="resultado"></div>
-  </div>
-</div>
-
 
 <body>
     <section class="text-center">
         <h1 id="titulo_pagina"></h1>
     </section>
 
-    <input onchange="buscar();" id="buscando" placeholder="Ingrese su id buscar" />
     
     <section class="text-center">
         <h3></h3>
@@ -40,54 +31,150 @@
                 <tbody id="registros"></tbody>
             </table>
           </div>
-
-
-          <body class="bg-light p-5">
-
-            <div class="container">
-              <h2 class="mb-4">Editar Comentario JSON</h2>
-          
-              <!-- Mostrar JSON como comentario -->
-              <pre id="comentarioJson" class="bg-light p-3 border rounded" style="white-space: pre-wrap;">
-                <!-- 
-                {
-                  "userId": 1,
-                  "id": 7,
-                  "title": "magnam facilis autem",
-                  "body": "dolore placeat quibusdam ea quo vitae\nmagni quis enim qui quis quo nemo aut saepe\nquidem repellat excepturi ut quia\nsunt ut sequi eos ea sed quas"
-                } 
-                -->
-              </pre>
-          
-              <!-- Textarea para edición del JSON -->
-              <textarea id="editorJson" class="form-control mt-3" rows="8"></textarea>
-          
-              <button class="btn btn-primary mt-3" onclick="guardarEdicion()">Guardar Edición</button>
-            </div>
-
- </section>
-
+        </style>
+      </head>
  
 
-
-  <body class="bg-light p-5">
-
-    <div class="container">
-      <h2 class="mb-4 text-center">Registro en Card</h2>
-  
-      <!-- Card con color personalizado usando Bootstrap -->
-      <div class="card text-white bg-primary mb-3">
-        <div class="card-header">
-          <strong>ID de Usuario:</strong> <span id="userId"></span>
-        </div>
-        <div class="card-body">
-          <h5 class="card-title" id="title"></h5>
-          <p class="card-text" id="body"></p>
+      <style>
+        * {
+          box-sizing: border-box;
+        }
+    
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: Arial, sans-serif;
+          background-color: #f0f0f0;
+        }
+    
+        .container {
+          display: flex;
+          height: 100vh;
+          justify-content: center; /* Centrar el contenido horizontalmente */
+          align-items: center; /* Centrar el contenido verticalmente */
+        }
+    
+        .card {
+          background-color: #d77a7a;
+          text-decoration-color: #b3ac29;
+          border-radius: 8px;
+          padding: 20px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          width: 90%; /* Ancho de la card */
+          max-width: 800px; /* Máximo ancho */
+        }
+    
+        h2 {
+          text-align: center;
+        }
+    
+        input, textarea, button {
+          width: 100%;
+          padding: 10px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          margin-top: 10px;
+        }
+    
+        button {
+          background-color: #007bff;
+          color: white;
+          border: none;
+          cursor: pointer;
+        }
+    
+        button:hover {
+          background-color: #0056b3;
+        }
+    
+        .form-container {
+          display: flex;
+          flex-direction: row; /* Mantiene el formulario y las cards en la misma fila */
+          justify-content: space-between; /* Espacio entre formulario y cards */
+        }
+    
+        .form-area {
+          width: 50%; /* Ancho del área del formulario */
+          padding-right: 10px; /* Espacio entre el formulario y las cards */
+        }
+    
+        .cards-area {
+          width: 50%; /* Ancho del área de las cards */
+          overflow-y: auto; /* Para que las cards se desplacen si son muchas */
+          padding-left: 10px; /* Espacio entre el formulario y las cards */
+        }
+    
+        .card-item {
+          background-color: #f8f9fa;
+          border-radius: 5px;
+          padding: 10px;
+          margin-bottom: 10px;
+          box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+          
+        }
+        .vertical-line {
+      width: 2px; /* Grosor de la línea vertical */
+      background-color: #262121; /* Color de la línea */
+      height: auto; /* Se ajusta automáticamente a la altura del contenedor */
+      margin: 0 10px; /* Espacio horizontal */
+    }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="card">
+          <h2>Crear Nueva Card</h2>
+          <form id="postForm">
+            <div class="form-container">
+              <div class="form-area">
+                <input type="text" id="title" placeholder="Título" required />
+                <textarea id="body" rows="3" placeholder="Contenido" required></textarea>
+                <button id="copyButton" type="submit">Crear Card</button>
+              </div>
+            
+              <div class="cards-area" id="cardsColumn">
+                <div class="vertical-line"></div> <!-- Línea vertical -->
+                <h2>Cards Creadas</h2>
+                <!-- Aquí se mostrarán las cards creadas -->
+              </div>
+            </div>
+          </form>
         </div>
       </div>
-    </div>
-
     
+      <script>
+        // Obtener referencias a los elementos del DOM
+        const postForm = document.getElementById('postForm');
+        const cardsColumn = document.getElementById('cardsColumn');
+    
+        // Manejar el evento de envío del formulario
+        postForm.addEventListener('submit', (event) => {
+          event.preventDefault(); // Evitar recarga de página
+    
+          // Obtener los valores del formulario
+          const title = document.getElementById('title').value;
+          const body = document.getElementById('body').value;
+    
+          // Crear y mostrar la card
+          createCard({ title, body });
+    
+          // Limpiar el formulario
+          postForm.reset();
+        });
+    
+        // Función para crear y agregar una card
+        function createCard(post) {
+          const cardItem = document.createElement('div');
+          cardItem.classList.add('card-item');
+    
+          cardItem.innerHTML = `
+            <h3>${post.title}</h3>
+            <p>${post.body}</p>
+          `;
+    
+          cardsColumn.appendChild(cardItem);
+        }
+      </script>
 
     <script src="assets/js/index.js"></script>
 </body>
